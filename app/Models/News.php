@@ -9,6 +9,7 @@ class News extends Model
 {
     protected $fillable = [
         'category_id',
+        'user_id',
         'title',
         'slug',
         'image',
@@ -24,5 +25,11 @@ class News extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // ...и одному автору (может быть пустым у старых новостей)
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

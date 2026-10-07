@@ -13,12 +13,21 @@
             <div class="body">
                 <h2>{{ $item->title }}</h2>
                 <div class="meta">
-                    {{ $item->category->name }} · {{ $item->published_at?->format('d.m.Y') }}
+                    {{ $item->category->name }}
+                    · Автор: {{ $item->author?->login ?? 'Редакция' }}
+                    · {{ $item->published_at?->format('d.m.Y') }}
                 </div>
                 <p>{{ Str::limit($item->content, 150) }}</p>
+                @auth
+                    @if ($item->user_id === auth()->id())
+                        <a href="{{ route('journalist.edit', $item) }}" class="edit-link">Редактировать</a>
+                    @endif
+                @endauth
             </div>
         </article>
     @empty
         <p>Пока новостей нет.</p>
     @endforelse
+
+    {{ $news->links('pagination.custom') }}
 @endsection

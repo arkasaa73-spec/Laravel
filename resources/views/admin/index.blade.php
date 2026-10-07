@@ -2,11 +2,22 @@
 
 @section('title', 'Админ — GameWave')
 
+@php
+    $roleNames = [
+        'user'       => 'Пользователь',
+        'journalist' => 'Журналист',
+        'admin'      => 'Администратор',
+    ];
+@endphp
+
 @section('content')
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
     <h1>Управление статьями</h1>
 
-    {{-- Таблица статей: редактирование/блокировка/удаление сверстаны,
-         сама логика будет подключена на следующем этапе --}}
+    {{-- Кнопки действий со статьями пока только сверстаны --}}
     <table class="admin-table">
         <thead>
             <tr>
@@ -36,28 +47,56 @@
         </tbody>
     </table>
 
+    <h1>Пользователи</h1>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Логин</th>
+                <th>Роль</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+                <tr>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->login }}</td>
+                    <td>{{ $roleNames[$user->role] ?? $user->role }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
     <h1>Изменение роли пользователя</h1>
 
-    {{-- Форма смены роли — пока только интерфейс --}}
-    <form method="POST" action="#" class="article-form" onsubmit="event.preventDefault()">
+    <form method="POST" action="{{ route('admin.role') }}" class="article-form">
         @csrf
 
         <div class="form-group">
             <label for="user_id">Пользователь</label>
             <select id="user_id" name="user_id">
-                <option value="1">Иван Иванов</option>
-                <option value="2">Мария Петрова</option>
-                <option value="3">Алексей Смирнов</option>
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>
+                        {{ $user->login }} ({{ $roleNames[$user->role] ?? $user->role }})
+                    </option>
+                @endforeach
             </select>
+            @error('user_id')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
         </div>
 
         <div class="form-group">
             <label for="role">Новая роль</label>
             <select id="role" name="role">
-                <option value="user">Пользователь</option>
-                <option value="journalist">Журналист</option>
-                <option value="admin">Администратор</option>
+                @foreach ($roleNames as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
             </select>
+            @error('role')
+                <div class="field-error">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn-submit">Изменить роль</button>

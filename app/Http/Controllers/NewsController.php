@@ -7,23 +7,23 @@ use App\Models\News;
 
 class NewsController extends Controller
 {
-    // Главная — выводим все новости
+    // Главная — все новости, от новых к старым, по 5 на страницу
     public function index()
     {
-        $news = News::with('category')
+        $news = News::with(['category', 'author'])
             ->orderByDesc('published_at')
-            ->get();
+            ->paginate(5);
 
         return view('news.index', compact('news'));
     }
 
-    // Страница одной категории — выводим новости только из неё
-    // {category:slug} — Laravel сам найдёт запись Category по полю slug
+    // Страница одной категории
     public function category(Category $category)
     {
         $news = $category->news()
+            ->with('author')
             ->orderByDesc('published_at')
-            ->get();
+            ->paginate(5);
 
         return view('news.category', compact('category', 'news'));
     }

@@ -42,6 +42,10 @@
         }
         .btn-submit:hover { background: #6a4ce0; }
 
+        .alert-success { background: #17301f; border: 1px solid #2e6b42; color: #8be0a4; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; max-width: 600px; }
+        .field-error { color: #ff7b7b; font-size: 13px; margin-top: 6px; }
+        .form-group select:disabled { opacity: 0.7; }
+
         .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
         .admin-table th, .admin-table td {
             padding: 10px 12px; border-bottom: 1px solid #2a2d34; text-align: left; font-size: 14px;
@@ -56,6 +60,34 @@
         .btn-edit { background: #3a7bd5; }
         .btn-block { background: #d5a13a; }
         .btn-delete { background: #d54a3a; }
+
+        .nav-user { margin-left: 20px; color: #7c5cff; font-weight: bold; }
+        .logout-form { display: inline; margin-left: 20px; }
+        .logout-btn { background: none; border: none; color: #e6e6e6; font-size: inherit; font-family: inherit; cursor: pointer; padding: 0; }
+        .logout-btn:hover { color: #7c5cff; }
+
+        .form-hint { margin-top: 16px; color: #9a9ea6; font-size: 14px; }
+        .form-hint a { color: #7c5cff; }
+
+        .pagination { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+        .pagination a, .pagination span {
+            padding: 8px 14px; border: 1px solid #2a2d34; border-radius: 6px;
+            background: #16181d; color: #e6e6e6; text-decoration: none; font-size: 14px;
+        }
+        .pagination a:hover { border-color: #7c5cff; }
+        .pagination .active { background: #7c5cff; border-color: #7c5cff; color: #fff; }
+        .pagination .disabled { color: #5d6169; }
+
+        .edit-link { display: inline-block; margin-top: 6px; color: #7c5cff; font-size: 13px; text-decoration: none; }
+        .edit-link:hover { text-decoration: underline; }
+
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 20px; z-index: 10; min-width: 170px;
+            background: #16181d; border: 1px solid #2a2d34; border-radius: 6px; padding: 6px 0;
+        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .site-header .dropdown-menu a { display: block; margin: 0; padding: 8px 14px; white-space: nowrap; }
     </style>
 </head>
 <body>

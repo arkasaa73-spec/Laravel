@@ -9,39 +9,69 @@ use Illuminate\Support\Str;
 
 class JournalistController extends Controller
 {
-    // Показываем форму написания статьи
+    // Форма написания новой статьи
     public function create()
     {
-        return view('journalist.create');
+        $categories = Category::orderBy('id')->get();
+
+        return view('journalist.create', compact('categories'));
     }
 
-    // Принимаем данные формы -> проверяем -> передаём в модель -> она пишет в БД
+    // Сохранение новой статьи: форма -> проверка -> модель News -> БД
     public function store(Request $request)
     {
-        // 1. Валидация: заголовок и текст обязательны
         $data = $request->validate([
-            'title'   => 'required|string|max:255',
-            'content' => 'required|string',
+            'title'       => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id', // категория должна реально существовать
+            'content'     => 'required|string',
         ]);
 
-        // 2. Категория пока заглушка — всегда "Консоли"
-        $category = Category::firstOrCreate(
-            ['slug' => 'konsoli'],
-            ['name' => 'Консоли']
-        );
-
-        // 3. Модель News создаёт запись в таблице news
-        //    slug генерируем из заголовка (+ случайный хвост, чтобы был уникальным)
         News::create([
-            'category_id'  => $category->id,
+            'category_id'  => $data['category_id'],
+            'user_id'      => auth()->id(), // автор — вошедший пользователь
             'title'        => $data['title'],
             'slug'         => Str::slug($data['title']) . '-' . Str::lower(Str::random(6)),
             'content'      => $data['content'],
-            'published_at' => now(), // дату ставим автоматически
+            'published_at' => now(),
         ]);
 
         return redirect()
             ->route('journalist.create')
             ->with('success', 'Статья сохранена!');
+    }
+
+    // Форма редактирования (та же вьюха, но с подставленными данными статьи)
+    public function edit(News $news)
+    {
+        $this->ensureAuthor($news);
+
+        $categories = Category::orderBy('id')->get();
+
+        return view('journalist.create', compact('news', 'categories'));
+    }
+
+    // Сохранение изменений
+    public function update(Request $request, News $news)
+    {
+        $this->ensureAuthor($news);
+
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'content'     => 'required|string',
+        ]);
+
+        // slug не трогаем, чтобы адрес статьи не менялся
+        $news->update($data);
+
+        return redirect()
+            ->route('journalist.edit', $news)
+            ->with('success', 'Изменения сохранены!');
+    }
+
+    // Править статью может только её автор, остальным — ошибка 403
+    private function ensureAuthor(News $news): void
+    {
+        abort_unless($news->user_id === auth()->id(), 403);
     }
 }
